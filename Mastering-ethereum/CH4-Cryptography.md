@@ -41,3 +41,53 @@ The public key is calculated from the private key using elliptic curve multiplic
 
 #### Elliptic Curve Arithmetic Operations
 
+Elliptic curve addition is defined such that given two points *P*1 and *P*2 on the elliptic curve, there is a third point *P*3 = *P*1 + *P*2, also on the elliptic curve.
+
+Geometrically, this third point *P*3 is calculated by drawing a line between *P*1 and *P*2. This line will intersect the elliptic curve in exactly one additional place. Call this point *P*3' = (*x*, *y*). Then reflect in the x-axis to get *P*3 = (*x*, *–y*).
+
+#### Generating a Public Key
+
+Starting with a private key in the form of a randomly generated number *k*, we multiply it by a predetermined point on the curve called the *generator point* *G* to produce another point somewhere else on the curve, which is the corresponding public key *K*: ***The generator point is always the same for all Ethereum users***
+
+K = k * G
+
+> K : Public key
+>
+> k : Private key
+>
+> G : Generator point
+
+Ethereum only uses uncompressed public keys; therefore the only prefix that is relevant is (hex) 04. The serialization concatenates the *x* and *y* coordinates of the public key(length : 65)
+
+```
+public key : (x, y)
+04 + x-coordinate (32 bytes/ 64 hexa) + y-coordinate (32 bytes/ 64 hex) = (65 bytes / 130 hexa)
+```
+
+## Cryptographic Hash Functions
+
+In simple terms, a hash function is “any function that can be used to map data of arbitrary size to data of fixed size.” 
+
+Ethereum uses the *Keccak-256* cryptographic hash function in many places. 
+
+## Ethereum Address
+
+Ethereum addresses are *unique identifiers* that are derived from public keys or contracts using the Keccak-256 one-way hash function.
+
+> private key : k -> get public key : K -> use Keccak256(K) : Keccak256(K) -> we can get a Ethereum address (20 bytes)
+
+> In bitcoin
+>
+> Bitcoin address : SHA-256(public key) ->  RIPEMD-160
+>
+> RIPEMD-160 makes result of sha shorter
+>
+> transaction ID : SHA-256 -> SHA-256 (To prevent length extension attack)
+
+### Ethereum Address Formats
+
+Unlike Bitcoin addresses, which are encoded in the user interface of all clients to include a built-in checksum to protect against mistyped addresses, Ethereum addresses are presented as raw hexadecimal without any checksum.
+
+### Inter Exchange Client Address Protocol
+
+The *Inter exchange Client Address Protocol* (ICAP) is an Ethereum address encoding that is partly compatible with the International Bank Account Number (IBAN) encoding, offering a versatile, checksummed, and interoperable encoding for Ethereum addresses
