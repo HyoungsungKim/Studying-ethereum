@@ -106,3 +106,76 @@ These concurrency problems, on top of the difficulty of tracking account balance
 
 ## Transaction Gas
 
+Gas is the fuel of Ethereum. ***Gas is not ether—it’s a separate virtual currency with its own exchange rate against ether.*** The open-ended (Turing-complete) computation model requires some form of metering in order to avoid denial-of-service attacks or inadvertently resource-devouring transactions.
+
+Gas is separate from ether in order to protect the system from the volatility that might arise along with rapid changes in the value of ether, and also as a way to manage the important and sensitive ratios between the costs of the various resources that gas pays for (namely, computation, memory, and storage).
+
+Wallets can adjust the gasPrice in transactions they originate to achieve faster confirmation of transactions. 
+
+***The gasPrice field in a transaction allows the transaction originator to set the price they are willing to pay in exchange for gas.***
+
+***In simple terms, gasLimit gives the maximum number of units of gas the transaction originator is willing to buy in order to complete the transaction.***
+
+***If your transaction’s destination address is a contract, then the amount of gas needed can be estimated but cannot be determined with accuracy.*** That’s because a contract can evaluate different conditions that lead to different execution paths, with different total gas costs.
+
+> analogy : 유사, 유추
+
+## Transaction Recipient
+
+The recipient of a transaction is specified in the to field. ***This contains a 20-byte Ethereum address.*** The address can be an EOA or a contract address.
+
+Ethereum does no further validation of this field. ***Any 20-byte value is considered valid. If the 20-byte value corresponds to an address without a corresponding private key, or without a corresponding contract, the transaction is still valid.*** 
+
+***Ethereum has no way of knowing whether an address was correctly derived from a public key (and therefore from a private key) in existence.***
+
+## Transaction Value and Data
+
+***The main "payload" of a transaction is contained in two fields:***
+
+- value
+- data
+
+Transactions can have both value and data, only value, only data, or neither value nor data. All four combinations are valid.
+
+> payload : 탑재량
+
+- A transaction with only value is a ***payment***.
+- A transaction with only data is an ***invocation***.
+- A transaction with both value and data is both a ***payment and an invocation.***
+- A transaction with neither value nor data—well that’s probably just a ***waste of gas!*** But it is still possible.
+
+> invocation : (컴퓨터)(법적 권한 등의) 발동[실시]
+
+### Transmitting Value to EOAs and Contracts
+
+When you construct an Ethereum transaction that contains a value, it is the equivalent of a *payment*. ***Such transactions behave differently depending on whether the destination address is a contract or not.***
+
+Ethereum will record a state change, adding the value you sent to the balance of the address. ***If the address has not been seen before, it will be added to the client’s internal representation of the state and its balance initialized to the value of your payment.***
+
+***If the destination address (to) is a contract, then the EVM will execute the contract and will attempt to call the function named in the data payload of your transaction.*** If there is no data in your transaction, the EVM will call a *fallback* function and, if that function is payable, will execute it to determine what to do next.
+
+> fallback function : 트랜젝션이 컨트랙트에 이더를 송금했으나 메소드를 호출하지 않은 경우에 실행
+
+### Transmitting a Data Payload to an EOA or Contract
+
+***When your transaction contains data, it is most likely addressed to a contract address. That doesn't mean you cannot send a data payload to an EOA—that is completely valid in the Ethereum protocol.***
+
+However, in that case, the interpretation of the data is up to the wallet you use to access the EOA. It is ignored by the Ethereum protocol. ***Most wallets also ignore any data received in a transaction to an EOA they control.***
+
+## Special Transaction Contract Creation
+
+One special case that we should mention is a transaction that ***creates a new contract*** on the blockchain, deploying it for future use. Contract creation transactions are sent to a special destination address called the *zero address*; the to field in a contract registration transaction contains the address 0x0. ***This address represents neither an EOA (there is no corresponding private–public key pair) nor a contract.*** It can never spend ether or initiate a transaction. ***It is only used as a destination, with the special meaning "create this contract."***
+
+***While the zero address is intended only for contract creation, it sometimes receives payments from various addresses. There are two explanations for this:***
+
+- either it is by accident, resulting in the loss of ether
+- it is an intentional *ether burn* 
+
+***You can include an ether amount in the value field if you want to set the new contract up with a starting balance, but that is entirely optional. If you send a value (ether) to the contract creation address without a data payload (no contract), then the effect is the same as sending to a burn address—there is no contract to credit, so the ether is lost.***
+
+```solidity
+web3.eth.account[0]
+```
+
+## Digital Signatures
+
