@@ -36,7 +36,7 @@ A transaction is a serialized binary message that contains the following data:
 
    The variable-length binary data payload 
 
-- v,r,s
+- ### v,r,s
 
    The three components of an ECDSA digital signature of the originating EOA 
 
@@ -179,3 +179,108 @@ web3.eth.account[0]
 
 ## Digital Signatures
 
+### The Elliptic Curve Digital Signature Algorithm
+
+A digital signature serves three purposes in Ethereum.
+
+- First, ***the signature proves that the owner of the private key,*** who is by implication the owner of an Ethereum account, has *authorized* the spending of ether, or execution of a contract.
+- Secondly, ***it guarantees non-repudiation:*** the proof of authorization is undeniable.
+- Thirdly, ***the signature proves that the transaction data has not been and cannot be modified by anyone after the transaction has been signed.***
+
+> repudiation : 거절, 부인
+
+### How Digital Signature Work
+
+A digital signature is a mathematical scheme that consists of two parts.
+
+- The first part is an algorithm for creating a signature, using a private key (the signing key), from a message (which in our case is the transaction).
+- The second part is an algorithm that allows anyone to verify the signature by only using the message and a public key.
+
+```
+Sig = sig ( keccak256 ( m ) , k ) 
+m : RLP-encoded transaction
+k : signing private key
+Or
+Sig = ( r , s ) 
+```
+
+### Verifying the Signature
+
+To verify the signature, one must have the signature (*r* and *s*), the serialized transaction, and the public key that corresponds to the private key used to create the signature.
+
+The signature verification algorithm takes the message, the signer’s public key, and the signature (*r* and *s* values), and ***returns true if the signature is valid for this message and public key.***
+
+### ECDSA Math
+
+***The signature algorithm first generates an *ephemeral* (temporary) private key in a cryptographically secure way.*** This temporary key is used in the calculation of the *r* and *s* values to ensure that the sender’s actual private key can’t be calculated by attackers watching signed transactions on the Ethereum network. 
+
+***The ephemeral private key is used to derive the corresponding (ephemeral) public key.***
+
+- A cryptographically secure random number *q*, which is used as the ephemeral private key
+- The corresponding ephemeral public key *Q*, generated from *q* and the elliptic curve generator point *G*
+
+```
+s ≡ q^-1 * (Keccak256(m) + r * k) (mod p)
+```
+
+- *q* is the ephemeral private key.
+- *r* is the *x* coordinate of the ephemeral public key.
+- *k* is the signing (EOA owner’s) private key.
+- *m* is the transaction data.
+- *p* is the prime order of the elliptic curve.
+
+### Transaction Signing in Practice
+
+> RLP encoding -> Keccak-256 -> ECDSA signature
+
+To sign a transaction in Ethereum, the originator must:
+
+1. Create a transaction data structure, containing nine fields: nonce, gasPrice, gasLimit, to, value, data, chainID, 0, 0.
+2. Produce an RLP-encoded serialized message of the transaction data structure.
+3. Compute the Keccak-256 hash of this serialized message.
+4. Compute the ECDSA signature, signing the hash with the originating EOA’s private key.
+5. Append the ECDSA signature’s computed v, r, and s values to the transaction.
+
+> v, r, s : The three components of an ECDSA digital signature of the originating EOA 
+
+### Raw Transaction Creation with EIP-155
+
+The EIP-155 "Simple Replay Attack Protection" standard specifies a replay-attack-protected transaction encoding, which includes a *chain identifier* inside the transaction data, prior to signing. ***This ensures that transactions created for one blockchain (e.g., the Ethereum main network) are invalid on another blockchain (e.g., Ethereum Classic or the Ropsten test network).***
+
+EIP-155 adds three fields to the main six fields of the transaction data structure, namely the chain identifier, 0, and 0. 
+
+## The Signature Prefix Value (v) and Public Key Recovery
+
+As mentioned in The Structure of a Transaction, the transaction message doesn't include a "from" field. ***That’s because the originator’s public key can be computed directly from the ECDSA  signature.***
+
+> Sig = ( r , s ) 
+
+Given the values r and s that were computed in ECDSA Math, we can compute two possible public keys.
+
+## Separating Signing and Transmission (Offline Signing)
+
+Once a transaction is signed, it is ready to transmit to the Ethereum network. ***The three steps of creating, signing, and broadcasting a transaction normally happen as a single operation.***  However, as you saw in Raw Transaction Creation and Signing, ***you can create and sign the transaction in two separate steps***.
+
+Why would you want to separate the signing and transmission of transactions? ***The most common reason is security***
+
+***Separating the functions of signing and transmitting and performing them on different machines is called offline signing and is a common security practice.***
+
+## Transaction Propagation
+
+The Ethereum network uses a "flood routing" protocol. Each Ethereum client acts as a *node* in a *peer-to-peer (P2P)* network, which (ideally) forms a *mesh* network.
+
+***On average, each Ethereum node maintains connections to at least 13 other nodes, called its neighbors.***  
+
+Each neighbor node validates the transaction as soon as they receive it. If they agree that it is valid, they store a copy and propagate it to all their neighbors (except the one it came from). 
+
+## Recording on the Blockchain
+
+While all the nodes in Ethereum are equal peers, some of them are operated by *miners* and are feeding transactions and blocks to *mining farms*, which are computers with high-performance graphics processing units (GPUs). The mining computers add transactions to a candidate block and attempt to find a *proof of work* that makes the candidate block valid.
+
+## Multiple-Signature (Multisig) Transactions
+
+Ethereum’s basic EOA value transactions have no provisions for multiple signatures; however, ***arbitrary signing restrictions can be enforced by smart contracts*** with any conditions you can think of, to handle the transfer of ether and tokens alike.
+
+To take advantage of this capability, ether has to be transferred to a "wallet contract" that is programmed with the spending rules desired, such as multisignature requirements or spending limits.
+
+Whenever you want to send funds to another account, ***all the required users will need to send transactions to the contract using a regular wallet app, effectively authorizing the contract to perform the final transaction.***
