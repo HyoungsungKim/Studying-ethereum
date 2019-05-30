@@ -134,4 +134,89 @@ If the codeHash field is the Keccak-256 hash of the empty string, i.e. `σ[a]_c`
 
 ***An account is empty when it has no code, zero nonce and balance.*** Even callable precompiled contracts can have an empty account state. This is because their account states do not usually contain the code describing its behavior. ***An account is dead when its account state is non-existent or empty***
 
-###  4.2 The transaction.
+###  4.2 The transaction
+
+A transaction (formally, T) is a single cryptographically-signed instruction constructed by an actor externally to the scope of Ethereum.
+
+There are two types of transactions:
+
+- Those which ***result in message calls***
+- Those which ***result in the creation of new accounts with associated code*** (known informally as ‘contract creation’). 
+
+Both types specify a number of common fields:
+
+- nonce : $T_n$
+- gasPrice : number of Wei to be paid per unit of gas
+- gasLimit : The 160-bit address of the message call’s recipient or, for a contract creation transaction
+- to : The 160-bit address of the message call’s recipient or, for a contract creation transaction
+- value : the number of Wei to be transferred to the message call’s recipient or,contract creation
+- v, r, s : Values corresponding to the signature of the transaction and ***used to determine the sender of the transaction***
+
+Contract creation transaction contains
+
+- init : ***An unlimited size byte array specifying the EVM-code*** for the account initialisation procedure, formally $T_i$
+
+Message call transaction contains
+
+- data : ***An unlimited size byte array specifying the input data of the message call,*** formally $T_d$
+
+### 4.3 The Block
+
+The block in Ethereum is the collection of relevant pieces of information (known as the block header), `H`, together with information corresponding to the comprised transactions, `T`, and a set of other block headers `U` that are known to have a parent equal to the present block’s parent’s parent (such blocks are known as ommers - uncle block). The block header contains several pieces of information:
+
+- parentHash: The Keccak 256-bit hash of the parent block’s header, in its entirety; formally $H_p$.
+
+- ommersHash(uncle hash) : The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.
+
+- beneficiary: The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_c$.
+
+- stateRoot: The Keccak 256-bit hash of ***the root node of the state tree,*** after all transactions are executed and finalisations applied; formally $H_r$.
+
+- transactionsRoot: The Keccak 256-bit hash of ***the root node of the tree structure populated with each transaction in the transactions list portion*** of the block; formally $H_t$.
+
+  > populate : 채우다
+
+  
+
+- receiptsRoot: The Keccak 256-bit hash of the ***root node of the tree structure populated with the receipts of each transaction in the transactions*** list portion of the block; formally $H_e$.
+
+- logsBloom: The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally $H_b$.
+
+- difficulty: A scalar value corresponding to the difficulty level of this block. ***This can be calculated from the previous block’s difficulty level and the timestamp***; formally $H_d$.
+
+- number: A scalar value equal to ***the number of ancestor blocks.*** The genesis block has a number of zero; formally $H_i$.
+
+- gasLimit: A scalar value equal to the ***current limit of gas expenditure per block;*** formally $H_l$.
+
+- gasUsed: A scalar value equal to the ***total gas used in transactions in this block;*** formally $H_g$.
+
+- timestamp: A scalar value equal to the reasonable output of Unix’s time() at this block’s inception; formally $H_s$.
+
+- extraData: An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_x$
+
+- mixHash: A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_m$.
+
+- nonce: A 64-bit value which, combined with the mixhash, proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
+
+The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_U$ and a series of the transactions, $B_T$. Formally, we can refer to a block B:
+$$
+B ≡ (B_H, B_T, B_U)
+$$
+
+### 4.3.1 Transaction Receipt
+
+In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, ***we encode a receipt of each transaction containing certain information from its execution.***
+
+Each receipt, denoted $B_R[i]$ for the *i*th transaction, is placed in an index-keyed tree and the root recorded in the header as $H_e$.
+
+The transaction receipt, R, is a tuple of four items comprising:
+
+- the ***cumulative gas*** used in the block containing the transaction receipt as of immediately after the transaction has happened $R_u$
+- the ***set of logs*** created through execution of the transaction $R_l$ 
+- the ***Bloom filter*** composed from information in those logs $R_b$
+- the ***status code*** of the transaction, $R_z$
+
+$$
+R ≡ (R_u, R_b, R_l, R_z)
+$$
+
