@@ -20,9 +20,9 @@ Overall, we wish to provide a system such that users can be guaranteed that no m
 
 ## 2. The Blockchain paradigm
 
-Ethereum, taken as a whole, can be viewed as a transaction-based state machine: we begin with a genesis state and incrementally execute transactions to morph it into some final state.
+***Ethereum, taken as a whole, can be viewed as a transaction-based state machine***: we begin with a genesis state and incrementally execute transactions to morph it into some final state.
 
-It is this final state which we accept as the canonical “version” of the world of Ethereum. The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world; in short, anything that can currently be represented by a computer is admissible. 
+It is this final state which we accept as the canonical “version” of the world of Ethereum. ***The state can include such information as account balances, reputations, trust arrangements, data pertaining to information of the physical world;*** in short, anything that can currently be represented by a computer is admissible. 
 
 > canonical : 고전으로 여겨지는
 >
@@ -37,17 +37,37 @@ Transactions thus represent a valid arc between two states;
 - the ‘valid’ part is important—there exist far more invalid state changes than valid state changes.
 - Invalid state changes might, e.g., be things such as reducing an account balance without an equal and opposite increase elsewhere.
 
-Blocks function as a journal, recording a series of transactions together with the previous block and ***an identifier for the final state (though do not store the final state itself—that would be far too big).*** They also punctuate the transaction series with incentives for nodes to mine. ***This incentivisation takes place as a state-transition function, adding value to a nominated account.***
+A valid state transition is one which comes about through a transaction.
+$$
+\sigma _{t+1} \equiv \gamma(\sigma _t, T)
+$$
 
+> $\gamma$ is Ethereum state transition function
+>
+> -> it means gamma function change state using transaction(T)
+
+Blocks function as a journal, ***recording a series of transactions together with the previous block*** and ***an identifier for the final state (though do not store the final state itself—that would be far too big).*** They also punctuate the transaction series with incentives for nodes to mine. ***This incentivisation takes place as a state-transition function, adding value to a nominated account.***
+
+> 블록은 마지막 state를 저장하는게 아니라 마지막 state를 식별 할 수 있는 식별자를 저장하고 있음.
+>
 > punctuate : 간간히 끼어들다, 구두점을 찍다.
 
-```
-σ_t+1 ≡ Π(σ_t, B)
-B ≡ (..., (T0, T1, ...), ...)
-Π(σ, B) ≡ Ω(B, Υ(Υ(σ, T0), T1)...)
-```
+Mining is the process of dedicating effort (working) to bolster one series of transactions (a block) over any other potential competitor block. It is achieved thanks to a cryptographically secure proof. This scheme is known as a proof-of-work.
+$$
+\begin{array}\\
+σ_{t+1} ≡ Π(σ_t, B) \\
+B ≡ (..., (T0, T1, ...), ...) \\
+Π(σ, B) ≡ Ω(B, Υ(Υ(σ, T0), T1)...) \\
+\end{array}
+$$
 
-***where `Υ` is the Ethereum state transition function.*** Where `Ω` is the block-finalisation state transition function (a function that rewards a nominated party); ***`B` is this block, which includes a series of transactions amongst some other components;*** and `Π` is the block-level state-transition function.
+> $\textstyle \prod$  : block level state-transition function ($\gamma$ : transaction level state-transition function)
+>
+> $B$ : Block which includes a series of transactions
+>
+> Ω : The block-finalisation state transition function (a function that rewards a nominated party);
+>
+> Ω : 블록의 마지막 state를 전파
 
 ### 2.1 Value
 
@@ -164,6 +184,8 @@ Message call transaction contains
 
 The block in Ethereum is the collection of relevant pieces of information (known as the block header), `H`, together with information corresponding to the comprised transactions, `T`, and a set of other block headers `U` that are known to have a parent equal to the present block’s parent’s parent (such blocks are known as ommers - uncle block). The block header contains several pieces of information:
 
+> `H`, `T`, `U` are defined as $B_H$, $B_T$, $B_U$
+
 - parentHash: The Keccak 256-bit hash of the parent block’s header, in its entirety; formally $H_p$.
 
 - ommersHash(uncle hash) : The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.
@@ -203,6 +225,14 @@ $$
 B ≡ (B_H, B_T, B_U)
 $$
 
+> Contents of a block
+>
+> $B_H$ : The block in Ethereum is the collection of relevant pieces of information (known as the block header)
+>
+> $B_T$ : A series of the transactions
+>
+> $B_U$ : A list of ommer block headers (of the same format as above) 
+
 ### 4.3.1 Transaction Receipt
 
 In order to encode information about a transaction concerning which it may be useful to form a zero-knowledge proof, or index and search, ***we encode a receipt of each transaction containing certain information from its execution.***
@@ -218,5 +248,27 @@ The transaction receipt, R, is a tuple of four items comprising:
 
 $$
 R ≡ (R_u, R_b, R_l, R_z)
+$$
+
+### 4.3.2 Holistic validity
+
+> Holistic  : 전체론적, 전체론의 (전체론 : 기관 전체가 그것을 이루고 있는 부분들의 동작이나 작용을 결정)
+
+We can assert a block’s validity if and only if it satisfies several conditions:
+
+it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_{T}$ , when executed in order on the base state `σ` (derived from the final state of the parent block), result in a new state of the identity $H_r$
+
+> $B_T$ : A series of the transactions
+>
+> $H_r$ : stateRoot: The Keccak 256-bit hash of the root node of the state tree
+
+$$
+\begin{array}\\
+H_r ≡ TRIE(L_S(Π(σ, B))) \\
+H_o ≡ KEC(RLP(L^∗_H(B_U)))\\
+H_t ≡ TRIE({∀i < \lVert B_T \rVert, i ∈ N : p(i, L_T(B_T[i]))})\\
+H_e ≡ TRIE({∀i < \lVert B_R \rvert, i ∈ N : p(i, L_R(B_R[i]))}) \\
+H_b ≡ \bigvee _{r∈B_R} (r_b)\\
+\end{array}
 $$
 
