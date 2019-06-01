@@ -92,9 +92,9 @@ The two sets of highly structured, ***‘top-level’, state values, are denoted
 
 > thereupon : 그러자 곧
 
-***Functions operating on highly structured values are denoted with an upper-case Greek letter,*** e.g. `Υ`, the Ethereum state transition function.
+***Functions operating on highly structured values are denoted with an upper-case Greek letter,*** e.g. $\gamma $, the Ethereum state transition function.
 
-For most functions, an uppercase letter is used, e.g. `C`, the general cost function. These may be subscripted to denote specialised variants, e.g. `CSSTORE`, the cost function for the `SSTORE` operation. 
+For most functions, an uppercase letter is used, e.g. `C`, the general cost function. These may be subscripted to denote specialised variants, e.g. $C_{SSTORE}$, the cost function for the `SSTORE` operation. 
 
 > subscripted  : 첨자를 붙인
 
@@ -102,25 +102,43 @@ the Keccak-256 hash function, is denoted `KEC` (and generally referred to as pla
 
 Tuples are typically denoted with an upper-case letter, e.g. `T`, is used to denote an Ethereum transaction. `T_n`, denotes the nonce of said transaction.
 
-`n` is used in the document to denote a transaction nonce. `δ`, the number of items required on the stack for a given operation.
+`n` is used in the document to denote a transaction nonce.
+
+`δ`, the number of items required on the stack for a given operation.
 
 `o` is used to denote the byte sequence given as the output data of a message call.
 
-the set of all byte sequences of length 32 is named `B_32` and the set of all non-negative integers smaller than 2^256 is named `N_256`.
+we assume scalars are ***non-negative integers*** and thus belong to the set $\mathbb{N}$
 
-`µ_s[0]` denotes the first item on the machine’s stack.
+The set of all ***byte sequences*** is $\mathbb{B}$
 
-the unmodified ‘input’ value be denoted by the placeholder  then the modified and utilisable value is denoted as ', and intermediate values would be *, ** &c. (  : Somthing)
+the set of all non-negative integers smaller than 2^256 is named $\mathbb{N}_{256}$.
 
-We define a number of useful functions throughout. One of the more common is `l`, which evaluates to the last item in the given sequence
+the set of all byte sequences of length 32 is named $\mathbb{B}_{32}$
+
+$\mu_s[0]$ denotes the first item on the machine’s stack.
+
+$\mu_m[0..31]$ denotes the first 32 items of the machine’s memory.
+
+> $\sigma$ : global state(world state) : which is a sequence of accounts, themselves tuples, the square brackets are used to reference an individual account.
+>
+> $\mu$ : machine state 
+
+the unmodified ‘input’ value be denoted by the placeholder  then the modified and utilisable value is denoted as ', and intermediate values would be *, ** &c. (  : Something)
+
+We define a number of useful functions throughout. One of the more common is  $l$, which evaluates to the last item in the given sequence
+$$
+l \equiv x[\lVert x \rVert - 1]
+$$
+
 
 ## 4. Blocks, State And Transactions
 
 ### 4.1 World State
 
-The world state (state), is a mapping between addresses (160-bit identifiers) and account states.
+***The world state (state), is a mapping between addresses (160-bit identifiers) and account states.***
 
-Though not stored on the blockchain, it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree 
+Though not stored on the blockchain, ***it is assumed that the implementation will maintain this mapping in a modified Merkle Patricia tree***
 
 #### Modified Merkle Patricia Tree(Appendix D)
 
@@ -132,25 +150,49 @@ data (byte arrays). ***It is defined in terms of a mutable data structure to map
 This has a number of benefits;
 
 - firstly the root node of this structure is cryptographically dependent on all internal data and as such its hash can be used as a secure identity for the entire system state.
-- Secondly, being an immutable data structure, ***it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly.***
-  ***Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.***
+- Secondly, being an immutable data structure, ***it allows any previous state (whose root hash is known) to be recalled by simply altering the root hash accordingly. Since we store all such root hashes in the blockchain, we are able to trivially revert to old states.***
 
 > revert  : 되돌아가다, 복귀하다.
 
 The account state, `σ[a]`, comprises the following four fields:
 
-- nonce: A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account. For account of address a in state σ, this would be formally denoted `σ[a]_n`.
-- balance: A scalar value equal to the number of Wei owned by this address. Formally denoted `σ[a]_b`.
-- storageRoot: ***A 256-bit hash of the root node of a Merkle Patricia tree*** that encodes the storage contents of the account (a mapping between 256-bit integer values), encoded into the trie as a mapping from the Keccak 256-bit hash of the 256-bit integer keys to the RLP-encoded 256-bit integer values. The hash is formally denoted `σ[a]_s`.
-- codeHash: ***The hash of the EVM code of this account***—this is the code that gets executed should this address receive a message call; ***it is immutable and thus, unlike all other fields, cannot be changed after construction.*** All such code fragments are contained in the state database under their corresponding hashes for later retrieval. This hash is formally denoted `σ[a]_c`, and thus the code may be denoted as `b`, given that KEC(b) = `σ[a]_c`.
+- nonce($σ[a]_n$): A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account.
+- balance($σ[a]_b$): A scalar value equal to the number of Wei owned by this address.
+- storageRoot($σ[a]_s$): ***A 256-bit hash of the root node of a Merkle Patricia tree*** that encodes the storage contents of the account (a mapping between 256-bit integer values), encoded into the tree as a mapping from the Keccak 256-bit hash of the 256-bit integer keys to the RLP-encoded 256-bit integer values.
 
+> storageRoot : Keccak로 해쉬화 된 Merkle particia tree의 root node를 저장 함
+
+- codeHash($σ[a]_c$): ***The hash of the EVM code of this account***—this is the code that gets executed should this address receive a message call; ***it is immutable and thus, unlike all other fields, cannot be changed after construction.*** All such code fragments are contained in the state database under their corresponding hashes for later retrieval. Thus the EVM code may be denoted as $\bold{b}$, given that $KEC(\bold{b}) = σ[a]_c$.
+
+> $KEC(\bold{b}) = σ[a]_c$ : EVM code b의 kec 해시 결과는 index a state의 코드 해시
+>
 > transaction : EOA -> CA
 >
 > message : CA -> CA
 
-Since we typically wish to refer not to the trie’s root hash but to ***the underlying set of key/value pairs stored within,***
+Since ***we typically wish to refer not to the trie’s root hash but to the underlying set of key/value pairs stored within,*** we define a convenient equivalence
+$$
+TRIE(L^*_I(\sigma[a]_s)) \equiv \sigma[a]_s \\
+L_I((k, v)) \equiv (KEC(k), RLP(v))\\
+k \in \mathbb{b} \  \and \ v \in \mathbb{n}
+$$
+The collapse function for the set of key/value pairs in the trie, $L^*_I$
 
-If the codeHash field is the Keccak-256 hash of the empty string, i.e. `σ[a]_c` = `KEC (())` , then the node represents a simple account, sometimes referred to as a “non-contract” account.
+If the codeHash field is the Keccak-256 hash of the empty string, i.e. $σ[a]_c = KEC (())$ , then the node represents a simple account, sometimes referred to as a “non-contract” account.
+
+We may define a world-state collapse function LS
+$$
+L_S(σ) ≡ (p(a) : σ[a] \neq \empty ) \\
+p(a) ≡ (KEC(a), RLP (σ[a]_n, σ[a]_b, σ[a]_s, σ[a]_c)
+$$
+This function, $L_S$, is used alongside the trie function to provide a short identity (hash) of the world state.
+
+Definition of empty
+$$
+EMPTY(σ, a) ≡ (σ[a]_c = KEC(()) ∧σ[a]_n = 0∧σ[a]_b = 0)
+$$
+
+> codehash 가 없고(empty), nonce와 balance가 0인 상태를 empty라고 함
 
 ***An account is empty when it has no code, zero nonce and balance.*** Even callable precompiled contracts can have an empty account state. This is because their account states do not usually contain the code describing its behavior. ***An account is dead when its account state is non-existent or empty***
 
