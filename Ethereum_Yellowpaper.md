@@ -112,7 +112,7 @@ we assume scalars are ***non-negative integers*** and thus belong to the set $\m
 
 The set of all ***byte sequences*** is $\mathbb{B}$
 
-the set of all non-negative integers smaller than 2^256 is named $\mathbb{N}_{256}$.
+the set of all non-negative integers smaller than $2^256$ is named $\mathbb{N}_{256}$.
 
 the set of all byte sequences of length 32 is named $\mathbb{B}_{32}$
 
@@ -207,20 +207,30 @@ There are two types of transactions:
 
 Both types specify a number of common fields:
 
-- nonce : $T_n$
-- gasPrice : number of Wei to be paid per unit of gas
-- gasLimit : The 160-bit address of the message call’s recipient or, for a contract creation transaction
-- to : The 160-bit address of the message call’s recipient or, for a contract creation transaction
-- value : the number of Wei to be transferred to the message call’s recipient or,contract creation
-- v, r, s : Values corresponding to the signature of the transaction and ***used to determine the sender of the transaction***
+- nonce($T_n$) : the number of transactions sent by the sender
+- gasPrice($T_p$) : number of Wei to be paid per unit of gas
+- gasLimit($T_g$) : The 160-bit address of the message call’s recipient or, for a contract creation transaction
+- to($T_t$) : The 160-bit address of the message call’s recipient or, for a contract creation transaction
+- value($T_v$) : the number of Wei to be transferred to the message call’s recipient or,contract creation
+- v, r, s($T_w$, $T_r$, $T_s$) : Values corresponding to the signature of the transaction and ***used to determine the sender of the transaction***
 
 Contract creation transaction contains
 
-- init : ***An unlimited size byte array specifying the EVM-code*** for the account initialisation procedure, formally $T_i$
+- init($T_i$) : ***An unlimited size byte array specifying the EVM-code*** for the account initialisation procedure, formally Message call transaction contains
 
-Message call transaction contains
+- data($T_d$) : An unlimited size byte array specifying the input data of the message call.
 
-- data : ***An unlimited size byte array specifying the input data of the message call,*** formally $T_d$
+$$
+L_T(T) ≡
+\begin{cases}
+(Tn, Tp, Tg, Tt, Tv, Ti, Tw, Tr, Ts) & \text{if } {T_t} = ∅\\
+(Tn, Tp, Tg, Tt, Tv, Td, Tw, Tr, Ts) & otherwise
+\end{cases}
+$$
+
+> Transaction from EOA : including $T_i$
+>
+> Transaction from CA : including $T_d$
 
 ### 4.3 The Block
 
