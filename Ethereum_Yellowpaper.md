@@ -112,7 +112,7 @@ we assume scalars are ***non-negative integers*** and thus belong to the set $\m
 
 The set of all ***byte sequences*** is $\mathbb{B}$
 
-the set of all non-negative integers smaller than $2^256$ is named $\mathbb{N}_{256}$.
+the set of all non-negative integers smaller than $2^{256}$ is named $\mathbb{N}_{256}$.
 
 the set of all byte sequences of length 32 is named $\mathbb{B}_{32}$
 
@@ -238,39 +238,39 @@ The block in Ethereum is the collection of relevant pieces of information (known
 
 > `H`, `T`, `U` are defined as $B_H$, $B_T$, $B_U$
 
-- parentHash: The Keccak 256-bit hash of the parent block’s header, in its entirety; formally $H_p$.
+- parentHash($H_p$): The Keccak 256-bit hash of the parent block’s header, in its entirety;.
 
-- ommersHash(uncle hash) : The Keccak 256-bit hash of the ommers list portion of this block; formally $H_o$.
+- ommersHash(uncle hash,  $H_o$) : The Keccak 256-bit hash of the ommers list portion of this block
 
-- beneficiary: The 160-bit address to which all fees collected from the successful mining of this block be transferred; formally $H_c$.
+- beneficiary($H_c$): The 160-bit address to which all fees collected from the successful mining of this block be transferred.(이더가 전송 될 주소)
 
-- stateRoot: The Keccak 256-bit hash of ***the root node of the state tree,*** after all transactions are executed and finalisations applied; formally $H_r$.
+- stateRoot($H_r$): The Keccak 256-bit hash of ***the root node of the state tree,*** after all transactions are executed and finalisations applied.
 
-- transactionsRoot: The Keccak 256-bit hash of ***the root node of the tree structure populated with each transaction in the transactions list portion*** of the block; formally $H_t$.
+- transactionsRoot($H_t$): The Keccak 256-bit hash of ***the root node of the tree structure populated with each transaction in the transactions list portion*** of the block.
 
   > populate : 채우다
 
   
 
-- receiptsRoot: The Keccak 256-bit hash of the ***root node of the tree structure populated with the receipts of each transaction in the transactions*** list portion of the block; formally $H_e$.
+- receiptsRoot($H_e$.): The Keccak 256-bit hash of the ***root node of the tree structure populated with the receipts of each transaction in the transactions*** list portion of the block.
 
-- logsBloom: The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list; formally $H_b$.
+- logsBloom($H_b$): The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list.
 
-- difficulty: A scalar value corresponding to the difficulty level of this block. ***This can be calculated from the previous block’s difficulty level and the timestamp***; formally $H_d$.
+- difficulty($H_d$): A scalar value corresponding to the difficulty level of this block. ***This can be calculated from the previous block’s difficulty level and the timestamp***.
 
-- number: A scalar value equal to ***the number of ancestor blocks.*** The genesis block has a number of zero; formally $H_i$.
+- number($H_i$): A scalar value equal to ***the number of ancestor blocks.*** The genesis block has a number of zero.
 
-- gasLimit: A scalar value equal to the ***current limit of gas expenditure per block;*** formally $H_l$.
+- gasLimit($H_l$): A scalar value equal to the ***current limit of gas expenditure per block .***
 
-- gasUsed: A scalar value equal to the ***total gas used in transactions in this block;*** formally $H_g$.
+- gasUsed($H_g$): A scalar value equal to the ***total gas used in transactions in this block.***
 
-- timestamp: A scalar value equal to the reasonable output of Unix’s time() at this block’s inception; formally $H_s$.
+- timestamp($H_s$): A scalar value equal to the reasonable output of Unix’s time() at this block’s inception .
 
-- extraData: An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally $H_x$
+- extraData($H_x$): An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer. 
 
-- mixHash: A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally $H_m$.
+- mixHash($H_m$): A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally .
 
-- nonce: A 64-bit value which, combined with the mixhash, proves that a sufficient amount of computation has been carried out on this block; formally $H_n$.
+- nonce($H_n$): A 64-bit value which, combined with the mixhash, proves that a sufficient amount of computation has been arried out on this block; formally .
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_U$ and a series of the transactions, $B_T$. Formally, we can refer to a block B:
 $$
@@ -291,16 +291,64 @@ In order to encode information about a transaction concerning which it may be us
 
 Each receipt, denoted $B_R[i]$ for the *i*th transaction, is placed in an index-keyed tree and the root recorded in the header as $H_e$.
 
-The transaction receipt, R, is a tuple of four items comprising:
+> $H_e$ : receiptsRoot 
 
-- the ***cumulative gas*** used in the block containing the transaction receipt as of immediately after the transaction has happened $R_u$
-- the ***set of logs*** created through execution of the transaction $R_l$ 
-- the ***Bloom filter*** composed from information in those logs $R_b$
-- the ***status code*** of the transaction, $R_z$
+The transaction receipt, $R$, is a tuple of four items comprising:
+
+- the ***cumulative gas*** - $R_u$ used in the block containing the transaction receipt as of immediately after the transaction has happened 
+- the ***set of logs*** - $R_l$ created through execution of the transaction  
+- the ***Bloom filter*** - $R_b$ composed from information in those logs 
+- the ***status code*** - $R_z$ of the transaction, 
 
 $$
 R ≡ (R_u, R_b, R_l, R_z)
 $$
+
+The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array:
+$$
+L_R(R) \equiv (0 \in \mathbb{B}_{256},R_u,R_b,R_l)
+$$
+
+>$\mathbb{B}$ : byte
+>
+>$\mathbb{N}$ : non-negative integers smaller than $2^{256}$
+
+***The sequence $R_l$ is a series of log entries, ($O_0$, $O_1$, ...).***
+
+> $R_l$ : set of logs
+
+- $O_a$ a tuple of the logger’s address
+- $O_t$ a possibly empty series of 32-byte log topics
+- $O_d$ some number of bytes of data
+
+$$
+O \equiv (O_a, (O_{t0}, O_{t1}, ...), O_d)
+$$
+
+We define the ***Bloom filter function, M,*** to reduce a log entry into a single 256-byte hash:
+$$
+M(O) \equiv \bigvee_{x \in{O_a}\cup O_t}(M_{3:2048}(x))
+$$
+where$M_{3:2048}$ is a specialised Bloom filter that ***sets three bits out of 2048***, given an arbitrary byte sequence.
+
+It does this through taking the ***low-order 11 bits of each of the first three pairs of bytes in a Keccak-256 hash of the byte sequence.***
+
+where $\beta$ is the bit reference function such that $\beta_j(x)$ equals the bit of index j (indexed from 0) in the byte array x.
+
+> $\beta_{m(x,i)}(y)$ : in the byte array $y$, index of $m(x,i)$
+>
+> $m(x, i) ≡ KEC(x)[i, i + 1] mod 2048 $ : KEC(x) 결과의 [i, i+1] index의 mod 결과
+
+$$
+\begin{align} \\
+M_{3:2048}(x : x ∈ \mathbb {B}) ≡ y : y ∈ \mathbb{B}_{256} \ {where:} \\
+y = (0, 0, ..., 0) \ except: \\
+∀i ∈ (0, 2, 4) : \beta_{m(x,i)}(y) = 1 \\
+m(x, i) ≡ KEC(x)[i, i + 1] mod 2048 \\
+\end{align}
+$$
+
+> $\beta$의 결과에 해당하는 곳만 1 나머지는 0.
 
 ### 4.3.2 Holistic validity
 
