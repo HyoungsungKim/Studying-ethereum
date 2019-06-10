@@ -71,10 +71,10 @@ $$
 
 ### 2.1 Value
 
-- 10^0 Wei
-- 10^12 Szabo
-- 10^15 Finney
-- 10^18 Ether
+- $10^0$ Wei
+- $10^12$ Szabo
+- $10^{15}$ Finney
+- $10^{18}$ Ether
 
 ### 2.2 Which History?
 
@@ -180,7 +180,7 @@ The collapse function for the set of key/value pairs in the trie, $L^*_I$
 
 If the codeHash field is the Keccak-256 hash of the empty string, i.e. $σ[a]_c = KEC (())$ , then the node represents a simple account, sometimes referred to as a “non-contract” account.
 
-We may define a world-state collapse function LS
+We may define a world-state collapse function $L_{S}$
 $$
 L_S(σ) ≡ (p(a) : σ[a] \neq \empty ) \\
 p(a) ≡ (KEC(a), RLP (σ[a]_n, σ[a]_b, σ[a]_s, σ[a]_c)
@@ -270,7 +270,7 @@ The block in Ethereum is the collection of relevant pieces of information (known
 
 - mixHash($H_m$): A 256-bit hash which, combined with the nonce, proves that a sufficient amount of computation has been carried out on this block; formally .
 
-- nonce($H_n$): A 64-bit value which, combined with the mixhash, proves that a sufficient amount of computation has been arried out on this block; formally .
+- nonce($H_n$): A 64-bit value which, combined with the mixhash, proves that a sufficient amount of computation has been arried out on this block; formally.
 
 The other two components in the block are simply a list of ommer block headers (of the same format as above), $B_U$ and a series of the transactions, $B_T$. Formally, we can refer to a block B:
 $$
@@ -354,7 +354,7 @@ $$
 
 > Holistic  : 전체론적, 전체론의 (전체론 : 기관 전체가 그것을 이루고 있는 부분들의 동작이나 작용을 결정)
 
-We can assert a block’s validity if and only if it satisfies several conditions:
+We can assert a block’s validity ***if and only if it satisfies several conditions:***
 
 it must be internally consistent with the ommer and transaction block hashes and the given transactions $B_{T}$ , when executed in order on the base state `σ` (derived from the final state of the parent block), result in a new state of the identity $H_r$
 
@@ -372,3 +372,14 @@ H_b ≡ \bigvee _{r∈B_R} (r_b)\\
 \end{array}
 $$
 
+> $H_r$(state root) :The Keccak 256-bit hash of ***the root node of the state tree,*** after all transactions are executed and finalisations applied.
+>
+> $H_o$ (ommer hash):  Keccak 256-bit hash of the ommers list portion of this block
+>
+> $H_t$(transsctionsRoot) : The Keccak 256-bit hash of ***the root node of the tree structure populated with each transaction in the transactions list portion*** of the block.
+>
+> $H_e$(receiptsRoot) : The Keccak 256-bit hash of the ***root node of the tree structure populated with the receipts of each transaction in the transactions*** list portion of the block.
+>
+> The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array
+>
+> $H_b$(logsBloom) : The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list.
