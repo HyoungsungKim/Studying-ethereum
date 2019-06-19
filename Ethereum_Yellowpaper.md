@@ -353,6 +353,10 @@ $$
 ### 4.3.2 Holistic validity
 
 > Holistic  : 전체론적, 전체론의 (전체론 : 기관 전체가 그것을 이루고 있는 부분들의 동작이나 작용을 결정)
+>
+> assert : 주장하다
+>
+> revert : 되돌아가다
 
 We can assert a block’s validity ***if and only if it satisfies several conditions:***
 
@@ -383,3 +387,79 @@ $$
 > The function $L_R$ trivially prepares a transaction receipt for being transformed into an RLP-serialised byte array
 >
 > $H_b$(logsBloom) : The Bloom filter composed from indexable information (logger address and log topics) contained in each log entry from the receipt of each transaction in the transactions list.
+
+where p(k, v) is simply the pairwise RLP transformation.
+
+> RLP : 단어들을(json) 하나의 string으로 변환
+
+$$
+p(k,v) \equiv (RLP(k), RLP(v)) \\
+TRIE(L_s(\sigma)) \equiv P(B_H)_{H_r}
+$$
+
+Thus $TRIE(L_S (\sigma))$ is the root node hash of the Merkle Patricia tree structure containing the key-value pairs of
+the state $\sigma$ with values encoded using `RLP`, and ***$P(B_H)$ is the parent block of `B`, defined directly.***
+
+### 4.3.3 Serialization
+
+The function $L_B$ and $L_H$ are the preparation functions for a block and block header respectively.
+$$
+\begin{array} \\
+L_H(H) \equiv (H_p, H_o, H_c, H_r, H_t, H_e, H_b, H_d, H_i, H_l, H_g, H_s, H_x, H_m, H_n) \\
+L_B(B) \equiv (L_H(B_H), L^*_T(B_T),L^*_T(B_U))
+\end{array}
+$$
+With $L^*_T$and $L^∗_H$ being element-wise sequence transformations,
+$$
+f^*((x_0, x_1, x_2, ...)) \equiv (f(x_0), f(x_1), f(x_2), ...)
+$$
+
+### 4.3.4 Block Header Validity
+
+We define $P(B_H )$ to be the parent block of B
+$$
+P(H) \equiv B' : KEC(RLP(B'_H)) = H_P
+$$
+Block number
+$$
+H_i \equiv P(H)_{H_i} + 1
+$$
+The canonical difficulty of a block of header H is defined as $D(H)$:
+$$
+D(H) \equiv \begin{cases} D_0 &\text{ if } H_i = 0 \\
+max(D_0, P(H)_{H_d} + x \times s_2 + \epsilon) &\text{ otherwise} \end{cases}
+$$
+Note that $D_0$ is the difficulty of the genesis block. The `Homestead` difficulty parameter, $s_2$ , is used to affect a dynamic homeostasis of time between blocks, as the time between blocks varies.
+
+In the Homestead release, the exponential difficulty symbol, $\epsilon$ causes the difficulty to slowly increase (every 100,000 blocks) at an exponential rate, and thus increasing the block time difference, and putting time pressure on transitioning to proof-of-stake. This effect, known as the “difficulty bomb”, or “ice age”, was explained in EIP-649 by Schoedon and Buterin [2017] and delayed and implemented earlier in EIP-2.
+
+$s_2$ was also modified in EIP-100 with the use of $x$, the adjustment factor above, and the denominator 9, in order to target the mean block time including uncle blocks by Buterin [2016]. ***Finally, in the Byzantium release, with EIP-649, the ice age was delayed by creating a fake block number, $H'_{i_0}$,*** which is obtained by subtracting three million from the actual block number, which in other words reduced $\epsilon$ and the time difference between blocks, in order to allow more time to develop proof-of-stake and preventing the network from “freezing” up.
+
+The nonce $H_n$ must satisfy the relations
+$$
+n \leqslant \frac{2^{256}}{H_d} \wedge \  m = H_m
+$$
+with 
+$$
+(n, m) = PoW(H_\cancel{n}, H_n, d)
+$$
+
+> $H_n$ : nonce
+>
+> $H_m$ : mix-hash
+
+***Where $H_n$ is the new block’s header $H$, but without the nonce and mix-hash components,*** $d$ being the current DAG, a large data set needed to compute the mix-hash, and PoW is the proof-of-work function. This evaluates to an array with the first item being the mix-hash, to prove that a correct DAG has been used, and the second item being a pseudo-random number cryptographically dependent on $H$ and $d$. Given an approximately uniform distribution in the range [0, $2^{64}$ ), the expected time to find a solution is proportional to the difficulty, $H_d$.
+
+## 5. Gas And Payment
+
+In order to avoid issues of network abuse and to sidestep the inevitable questions stemming from Turing complete-
+ness, all programmable computation in Ethereum is subject to fees. The fee schedule is specified in units of gas. Thus any given fragment of programmable computation has a universally agreed cost in terms of gas.
+
+Every transaction has a specific amount of gas associated with it:`gasLimit`. This is the amount of gas which is implicitly purchased from the sender’s account balance. The purchase happens at the according `gasPrice`, also specified in the transaction. The transaction is considered invalid if the account balance cannot support such a purchase. It is named `gasLimit` since any unused gas at the end of the transaction is refunded to the sender’s account. Gas does not exist outside of the execution of a transaction. Thus for accounts with trusted code associated, a relatively high gas limit may be set and left alone.
+
+In general, Ether used to purchase gas that is not refunded is delivered to the beneficiary address, the address of an account typically under the control of the miner. Transactors are free to specify any `gasPrice` that they wish, however miners are free to ignore transactions as they choose. Since there will be a (weighted) distribution of minimum acceptable gas prices, transactors will necessarily have a trade-off to make between lowering the gas price and maximising the chance that their transaction will be mined in a timely manner.
+
+> Block gas limit가 정해져 있기 때문에 gas price가 높으면 더 많은 수수로 얻을 수 있음.
+
+## 6. Transaction Execution
+
