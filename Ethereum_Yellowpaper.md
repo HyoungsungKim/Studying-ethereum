@@ -463,3 +463,68 @@ In general, Ether used to purchase gas that is not refunded is delivered to the 
 
 ## 6. Transaction Execution
 
+The execution of a transaction is the most complex part of the Ethereum protocol:
+
+It is assumed that any transactions executed first pass the initial tests of intrinsic validity.
+
+- The transaction is well-formed RLP, with no additional trailing bytes
+- the transaction signature is valid
+- the transaction nonce is valid (equivalent to the sender account’s current nonce)
+- the gas limit is no smaller than the intrinsic gas, $g_0$, used by the transaction
+- the sender account balance contains at least the cost, $v_0$, required in up-front payment.
+
+$$
+\sigma ^{'} = \gamma(\sigma, T)
+$$
+
+- $\sigma ^{'}$  is post-transaction state.
+- $\gamma^{g}$ : to evaluate to the amount of gas used in the excution of a transaction
+- $\gamma^{l}$ : to evaluate to the transaction's accrued(발생한) log time
+- $\gamma^{z}$ : to evaluate to the status code resulting from the transaction.
+
+### 6.1 Substate
+
+Throughout transaction execution, we accrue certain information that is acted upon immediately following the transaction. We call this transaction substate, and represent it as `A`,
+$$
+A \equiv (A_s, A_l, A_t, A_r)
+$$
+
+- $A_s$ the self-destruct set: a set of accounts that will be discarded following the transaction’s completion.
+- $A_l$ is the log series: this is a series of archived and indexable ‘checkpoints’ in VM code execution that allow for contract-calls to be easily tracked by onlookers external to the Ethereum world (such as decentralised application front-ends).
+- $A_t$ is the set of touched accounts, of which the empty ones are deleted at the end of a transaction.
+- $A_r$, the refund balance, increased through using the SSTORE instruction in order to reset contract storage to zero from some non-zero value.
+- $A^0$ : empty substate
+
+$$
+A^0 \equiv (\empty, (), \empty, 0)
+$$
+
+### 6.2 Execution
+
+The execution of a valid transaction begins with an irrevocable(변경할 수 없는) change made to the state: the nonce of the account of the sender, `S(T)`, is incremented by one and the balance is reduced.
+
+## 7. Contract creation
+
+There are a number of intrinsic parameters used when creating an account:
+
+- sender (s)
+- original transactor (o)
+- available gas (g)
+- gas price (p)
+- endowment(기부금, 자질) (v) together with an arbitrary length byte array
+- the initialisation EVM code `i`
+- the present depth of the message-call/contract-creation stack (e)
+- the permission to make modifications to the state (w).
+
+We define the creation function formally as the function $\wedge$, which evaluates from these values, together with the state σ to the tuple containing the new state, remaining gas, accrued transaction substate and an error message
+$(σ', g', A, o)$, as in section 6:
+$$
+{\sigma^{'}, g', A, z, o} \equiv \wedge(\sigma, s, o, g, p, v, i, e, w)
+$$
+The address of the new account is defined as being the rightmost 160 bits of the Keccak hash of the RLP encoding of the structure containing only the sender and the account nonce. Thus we define the resultant address for the new account $\alpha$:
+$$
+\alpha \equiv \beta_{96..255}(KEC(RLP(s, \sigma[s]_n - 1)))
+$$
+***Note we use one fewer than the sender’s nonce value;*** we assert that we have incremented the sender account’s nonce prior to this call, and so the value used is the sender’s nonce at the beginning of the responsible transaction or VM operation.
+
+## 11. Block Finalisation
