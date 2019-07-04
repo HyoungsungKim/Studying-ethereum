@@ -527,4 +527,49 @@ $$
 $$
 ***Note we use one fewer than the sender’s nonce value;*** we assert that we have incremented the sender account’s nonce prior to this call, and so the value used is the sender’s nonce at the beginning of the responsible transaction or VM operation.
 
-## 11. Block Finalisation
+## 11. Block Finalization
+
+The process of finalising a block involves four stages:
+
+​	(1) Validate (or, if mining, determine) ommers;
+​	(2) validate (or, if mining, determine) transactions;
+​	(3) apply rewards;
+​	(4) verify (or, if mining, compute a valid) state and block nonce.
+
+### 11.1 Omar Validation
+
+The validation of ommer headers means nothing more than verifying that ***each ommer header is both a valid header and satisfies the relation of N th-generation ommer to the present block where N ≤ 6.*** The maximum of ommer headers is two.
+
+### 11.2 Transaction Validation
+
+The given `gasUsed` must correspond faithfully to the transactions listed: $B_{H_g}$,the total gas used in the block, must be equal to the accumulated gas used according to the final transaction:
+
+### 11.3 Reward Application
+
+The application of rewards to a block involves raising the balance of the accounts of the beneficiary address of the block and each ommer by a certain amount. We raise the block's beneficiary account by $R_{block}$; for each ommer, we raise the block's beneficiary $\frac{1}{32}$ by an additional of the block reward and the beneficiary of the ommer gets rewarded depending on the block number. Formally we define the function Ω:
+
+> beneficiary : 수익자
+
+If there are collisions of the beneficiary addresses between ommers and the block (i.e. two ommers with the same beneficiary address or an ommer with the same beneficiary address as the present block), additions are applied
+cumulatively.
+
+### 11.5 Mining Proof-of-Work
+
+For both reasons, there are two important goals of the proof-of-work function;
+
+- Firstly, it should be as accessible as possible to as many people as possible. The requirement of, or reward from, specialised and uncommon hardware should be minimised. This makes the distribution model as open as possible, and, ideally, makes the act of mining a simple swap from electricity to Ether at roughly the same rate for anyone around the world.
+- Secondly, it should not be possible to make super-linear profits, and especially not so with a high initial barrier. Such a mechanism allows a well-funded adversary to gain a troublesome amount of the network's total mining power and as such gives them a super-linear reward (thus skewing distribution in their favour) as well as reducing the network security.
+
+Two directions exist for ASIC resistance;
+
+- Firstly make it sequential memory-hard, i.e. engineer the function such that the determination of the ***nonce requires a lot of memory and bandwidth such that the memory cannot be used in parallel to discover multiple nonces simultaneously.***
+- The second is to make the type of computation it would need to do general-purpose; the meaning of “specialised hardware” for a general-purpose task set is, naturally, general purpose hardware and as such commodity desktop computers are likely to be pretty close to “specialised hardware” for the task. ***For Ethereum 1.0 we have chosen the first path.***
+
+#### 11.5.1 Ethash
+
+- There exists a seed which can be computed for each block by scanning through the block headers up until that point.
+- From the seed, one can compute a pseudo-random cache, $J_{cacheinit}$ bytes in initial size. Light clients store the cache.
+- From the cache, we can generate a dataset, $J_{datasetinit}$ bytes in initial size, with the property that each item in the dataset depends on only a small number of items from the cache. Full clients and miners store the dataset. The dataset grows linearly with time.
+- Mining involves grabbing random slices of the dataset and hashing them together. Verification can be done with low memory by using the cache to regenerate the specific pieces of the dataset that you need, so you only need to store the cache.
+- The large dataset is updated once every $J_{epoch}$ blocks, so the vast majority of a miner's effort will be reading the dataset, not making changes to it.
+
