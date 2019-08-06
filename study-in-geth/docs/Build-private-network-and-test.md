@@ -538,6 +538,6 @@ As we expected, Alice has 75 ether, Bob has 5 ether. We did it!
 
 That is all what i have prepared. My goal is changing consensus algorithm of geth for studying. So if my process is successful, I will be back with new posts. Please pray for me and next posts.. T_T
 
-If there are errors or you wand to add more detail, please contribute it
+If there are errors or you want to add more details, please contribute it
 
 Github : https://github.com/HyoungsungKim/Studying-ethereum/tree/master/study-in-geth/docs
