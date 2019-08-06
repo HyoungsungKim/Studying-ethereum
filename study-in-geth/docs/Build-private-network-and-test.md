@@ -540,4 +540,4 @@ That is all what i have prepared. My goal is changing consensus algorithm of get
 
 If there are errors or you wand to add more detail, please contribute it
 
-Github : 
+Github : https://github.com/HyoungsungKim/Studying-ethereum/tree/master/study-in-geth/docs
