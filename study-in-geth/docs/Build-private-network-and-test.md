@@ -6,7 +6,7 @@ Today we will build our own private network and test it is working well. However
 
 Index
 
-1. [Environment][#environment]
+1. [Environment](#environment)
 2. [Build private network](#build-private-network)
 3. [Test private network](#test-private-network)
 4. [Make a transaction for testing private network](#make-a-transaction-for-testing-private-network)
@@ -45,7 +45,7 @@ is enough. However, If you want to test with multi-nodes someday, then you have 
 
 If build is successful then you can see `geth` in /go-ethereum/build/bin
 
-![you can see the geth in bin folder](/home/hskim/Documents/github-repos/Studying-ethereum/study-in-geth/docs/img/geth-directory.png)
+![you can see the geth in bin folder](./img/geth-directory.png)
 
 ## Build private network
 
@@ -146,7 +146,7 @@ INFO [08-06|20:49:41.303] Successfully wrote genesis state         database=ligh
 
 If initiation is done well, then you can see `geth` and `keystore` folder in your storage
 
-![geth-test folder](/home/hskim/Documents/github-repos/Studying-ethereum/study-in-geth/docs/img/geth-test.png)
+![geth-test folder](./img/geth-test.png)
 
 ***Now we can run our private network!***
 
