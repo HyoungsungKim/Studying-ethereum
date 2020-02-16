@@ -21,15 +21,15 @@ Index
 
 ### Download and install geth
 
-First clone geth from go-ethereum repository to `GOPATH` directory
+First clone geth from go-ethereum repository to `GOPATH` directory. my `GOPATH` is `/home/hskim/go` so i cloned geth to `/home/hskim/go/src/github.com`
 
-my `GOPATH` is `/home/hskim/go` so i cloned geth to `/home/hskim/go/src/github.com`
+>If you don't want to change any code in .go, you can clone it anywhere
 
 ```
 git clone -b lecture --single-branch https://github.com/HyoungsungKim/go-ethereum.git
 ```
 
-Then geth will be downloaded. after downloading, move to `go-ethereum` directory and open terminal
+Then geth will be downloaded. after downloading, move to `go-ethereum` directory and open terminal and type this line
 
 ```
 make all
@@ -40,7 +40,7 @@ If build is successful then you can see `geth` in /go-ethereum/build/bin
 ![you can see the geth in bin folder](./img/geth-directory.png)
 
 ## Build private network
-You can find `puppeth` which is located in same directory with `geth`. We will use it to make our own network. For out network, we have to make a `genesis` file first.
+You can find `puppeth` which is located in same directory with `geth`. We will use it to make our own network. For our network, we have to make a `genesis` file first.
 
 Run `puppeth` and follow the steps below
 
@@ -126,11 +126,11 @@ What would you like to do? (default = stats)
 > ^C
 ```
 - `eccpow1` is name of genesis file
+  - you can see `eccpow1.json` in directory
 - `chainID` is 12345. You can change it, but you have to avoid already defined `chainID`
 - You can exit using `ctrl` + `c`
 
-
-`chainId` is the most important part of this `.json`. Because, geth can recognize a network using `chainID`. In ethereum network, There are already defined `chainID`. you can see more detail from [here](https://github.com/ethereumbook/ethereumbook/issues/110)
+`chainID` is the most important part of this process. Because, geth can recognize a network using `chainID`. In ethereum network, There are already defined `chainIDs`. you can see more detail from [here](https://github.com/ethereumbook/ethereumbook/issues/110)
 
 ```
 0: Olympic; Ethereum public pre-release testnet
@@ -155,13 +155,13 @@ Finally, We are ready to start.
 Move to `/go-ethereum/build/bin`, open terminal and follow it
 
 ```
-(EXAMPLE) $ ./geth --datadir your_own_storage init genesis.json 
+$ ./geth --datadir your_own_storage init genesis_file_name.json 
 ```
 
 For example, in my case
 
 ```
-$ ./geth --datadir /home/hskim/Documents/geth-test init genesis.json 
+(EXAMPLE) $ ./geth --datadir /home/hskim/Documents/geth-test init eccpow1.json 
 ```
 
 After initiation, check your own storage folder
@@ -180,7 +180,7 @@ INFO [08-06|20:49:41.302] Persisted trie from memory database      nodes=0 size=
 INFO [08-06|20:49:41.303] Successfully wrote genesis state         database=lightchaindata hash=ab944c…55600c
 ```
 
-If initiation is done well, then you can see `geth` and `keystore` folder in your storage
+If initiation is done well, then you can see `geth` and `keystore` folder in your storage folder
 
 ![geth-test folder](./img/geth-test.png)
 
@@ -189,18 +189,18 @@ If initiation is done well, then you can see `geth` and `keystore` folder in you
 open terminal in `/go-ethereum/build/bin` and follow it!
 
 ```
-(EXAMPLE) $ ./geth --datadir Your_own_storage --networkid 12345 console
+$ ./geth --datadir Your_own_storage --networkid 12345 console
 ```
 
-We set the `chainid` as 12345 in `genesis.json` Therefore our `networkid` is 12345 too
+We set the `chainid` as 12345 when we make genesis file(In this example, genesis file name is `eccpow1.json`). Therefore our `networkid` is 12345 too
 
 In my case,
 
 ```
-$ ./geth --datadir /home/hskim/Documents/geth-test --networkid 12345 console
+(EXAMPLE) $ ./geth --datadir /home/hskim/Documents/geth-test --networkid 12345 console
 ```
 
-then you can see
+Then you can see
 
 ```
 INFO [08-06|21:27:43.867] Maximum peer count                       ETH=50 LES=0 total=50
@@ -233,7 +233,9 @@ at block: 0 (Thu, 01 Jan 1970 09:00:00 KST)
 >
 ```
 
-At last line, you can see console pointer(>). there are some lines we need to check
+At last line, you can see console pointer(>).
+
+There are some lines of the box above that we need to check 
 
 ```
 INFO [08-06|21:27:43.904] Initialised chain configuration          config="{ChainID: 12345 Homestead: 0 DAO: <nil> DAOSupport: false EIP150: <nil> EIP155: 0 EIP158: 0 Byzantium: <nil> Constantinople: <nil>  Petersburg: <nil> Engine: unknown}"
@@ -257,12 +259,12 @@ Now our private network is running!
 >
 > This source will make `elapseTime.csv` file in /build/bin directory(Same directory with `geth` and `puppeth`).
 > In this file, block generation time will be written by source code.
-> You can see a example in below
+> You can see a example below
 
 <img src="./img/elapse_time.png" alt="Elapse time" style="zoom:80%;" />
 
 - 1, 2, ... ,41 is block height
-- 2m53.376, 3m24.504... , 5m44.6046 is elapse time(block generation time)
+- 2m53.376, 3m24.504... , 5m44.6046 is elapsed time(block generation time)
 
 Now let's test our private network
 
@@ -285,7 +287,7 @@ WARN [08-06|21:33:36.241] Please remember your password!
 "0xb8c941069cc2b71b1a00db15e6e00a200d387039"
 ```
 
-We just generated the address of Alice:`0xb8C941069cC2B71B1a00dB15E6E00A200d387039`. We can see it by using geth
+We just generated the address of Alice:`0xb8C941069cC2B71B1a00dB15E6E00A200d387039`. We can check using geth
 
 ```
 > eth.accounts
@@ -310,7 +312,7 @@ There are 2 ways to check balance.
 
 I will use first one in this example to avoid confusion.
 
-As we expect, there is no ether. Let's do mining.
+As we expect, there is no ether at all. Let's do mining.
 
 First we have to set miner's address
 
@@ -320,7 +322,7 @@ We will use 3 commands
   - It sets miner's address. Mining reward will be sent to this account
 - miner.start(number of threads)
   - Start mining. You can set how many threads you will use. I will use 1 thread
-  - If your CPU has enoug core, you can use higher number. It will faster.
+  - If your CPU has enough core, you can use higher number. It will faster.
 - miner.stop()
   - Stop mining
 
@@ -438,7 +440,7 @@ WARN [08-06|22:00:23.416] Please remember your password!
 0
 ```
 
-I got the account of BOb:`0xf39cf42cd233261cd2b45adf8fb1e5a1e61a6f90` Alice will send ether to Bob's account
+I got account of Bob:`0xf39cf42cd233261cd2b45adf8fb1e5a1e61a6f90` Alice will send ether to Bob's account
 
 ```
 > eth.sendTransaction({from: "0xb8c941069cc2b71b1a00db15e6e00a200d387039", to: "0xf39cf42cd233261cd2b45adf8fb1e5a1e61a6f90", value: web3.toWei(5, "ether")})
@@ -457,7 +459,7 @@ Or we can initialize these using variable
 > eth.sendTransaction({from: from, to: to, value: web3.toWei(5, "ether")})
 ```
 
-We sent ether, however, ***don't forget we never use private key of Alice.*** Therefore we met  `Error`
+We sent ether. However, we got error message. Because ***we did not use private key of Alice yet.***
 
 ```
 WARN [08-06|22:04:55.407] Served eth_sendTransaction               reqid=25 t=3.461656ms err="authentication needed: password or unlock"
@@ -511,7 +513,7 @@ INFO [08-06|22:16:09.275] Submitted transaction                    fullhash=0x92
 "0x926f1bb71d5b48a306e6cde2d45c01f8af2107febf94b166a7e5f8e025dc8adc"
 ```
 
-There is no error. Let's see pending transactions
+There is no error. Let's see a pending transactions
 
 ```
 > eth.pendingTransactions
@@ -533,7 +535,7 @@ There is no error. Let's see pending transactions
 }]
 ```
 
-Yeah! There is a transaction.
+Yeah! There is transaction.
 
 ```
 > eth.getBalance("0xb8c941069cc2b71b1a00db15e6e00a200d387039")
