@@ -1,5 +1,10 @@
 # Build private network and test
 
+Writer : Hyoungsung Kim(김형성)
+Email : hyoungsung@gist.ac.kr / rktkek456@gmail.com
+Github for this example : https://github.com/HyoungsungKim/Studying-ethereum/tree/master/study-in-geth
+For more information : [INFONET](https://infonet.gist.ac.kr/)
+
 Today we will build our own private network and test it is working well. However, we will use only 1 node for today. Let's try multi-node later.
 
 ---
