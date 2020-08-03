@@ -40,5 +40,11 @@ example)
 geth --datadir ~/data --networkid 12345 --port 30305 --bootnodes enode://8c544b4a07da02a9ee024def6f3ba24b2747272b64e16ec5dd6b17b55992f8980b77938155169d9d33807e501729ecb42f5c0a61018898c32799ced152e9f0d7@9[::]:30301 console
 ```
 
+6. Monitor node states
+
+```
+
+```
+
 
 
