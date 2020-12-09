@@ -25,7 +25,7 @@ Index
 
 - Linux mint 19.1 or Linux manjaro 19.0.0
 - Go (version 1.10 or later)
-- [geth-lecture branch](https://github.com/HyoungsungKim/go-ethereum/tree/lecture) (go-ethereum)
+- [geth-lecture branch](https://github.com/cryptoecc/ETH-ECC) (go-ethereum)
 
 ### Download and install geth
 
@@ -34,7 +34,7 @@ First clone geth from go-ethereum repository to `GOPATH` directory. my `GOPATH` 
 >If you don't want to change any code in .go, you can clone it anywhere
 
 ```
-git clone -b lecture --single-branch https://github.com/HyoungsungKim/go-ethereum.git
+git clone https://github.com/cryptoecc/ETH-ECC
 ```
 
 Then geth will be downloaded. after downloading, move to `go-ethereum` directory and open terminal and type this line
