@@ -23,6 +23,12 @@ example)
 enode://5bd67e76c826c05ffd8120d96022e2fc02ae2c64705d0297d85e0374fd8a0f31c9df187a3edbe9a4db1ef6a0ca059a3f0f270992060daa3192e961205cdead2a@172.***.***.***:30305
 ```
 
+```
+>admin.nodeInfo.enr
+"enr:-Je4QLN5Q0k71qut8LkTuDVN6rKJqD9_J72j-LlD5ZDiLgY7QmbpZcQXekeEDlBjU5jxGw6oroIfWvo-syZVBvjHwogBg2V0aMfGhAQ66A6AgmlkgnY0gmlwhKwaEBSJc2VjcDI1NmsxoQJb1n52yCbAX_2BINlgIuL8Aq4sZHBdApfYXgN0_YoPMYN0Y3CCdmGDdWRwgnZh"
+
+```
+
 5. Connect member node
 
 - Init geth using same genesis file of bootnode
