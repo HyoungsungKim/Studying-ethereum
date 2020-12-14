@@ -20,7 +20,7 @@ example)
 
 ```
 >admin.nodeInfo.enode
-enode://8c544b4a07da02a9ee024def6f3ba24b2747272b64e16ec5dd6b17b55992f8980b77938155169d9d33807e501729ecb42f5c0a61018898c32799ced152e9f0d7@9[::]:30301 console
+enode://5bd67e76c826c05ffd8120d96022e2fc02ae2c64705d0297d85e0374fd8a0f31c9df187a3edbe9a4db1ef6a0ca059a3f0f270992060daa3192e961205cdead2a@172.***.***.***:30305
 ```
 
 5. Connect member node
@@ -37,7 +37,7 @@ geth --datadir {datadir} --networkid {12345} --port 30305 --bootnodes <bootstrap
 example)
 
 ```
-geth --datadir ~/data --networkid 12345 --port 30305 enode://25bf52f8fac2fd75180d03bce423e75a70d8600e27cc2c84e81b5db205e7e746471088dc7f57316a75e44648f77ad27eaf324d6874e0e33ea785a30c81c9f778@172.**.**.***:30303 consol
+geth --datadir ~/data --networkid 12345 --port 30305 enode://5bd67e76c826c05ffd8120d96022e2fc02ae2c64705d0297d85e0374fd8a0f31c9df187a3edbe9a4db1ef6a0ca059a3f0f270992060daa3192e961205cdead2a@172.***.***.***:30305 consol
 ```
 
 6. Monitor node states
