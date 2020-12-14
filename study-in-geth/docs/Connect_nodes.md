@@ -26,8 +26,7 @@ example)
 
 ```
 > admin.nodeInfo.enr
-"enr:-Je4QFxGpRYN9wMTh7sxAoGGai_MTKg6ki1NbYU82e7_wcTCIrH7jdEhyowwjwkc-IkA3iNMHIE5jAH1t-AdUQZ4vYIDg2V0aMfGhAQ66A6AgmlkgnY0gmlwhKwaEHiJc2VjcDI1NmsxoQJb1n52yCbAX_2BINlgIuL8Aq4sZHBdApfYXgN0_YoPMYN0Y3CCdmGDdWRwgnZh"
-
+"enr:-Je4QHb0h_OAfBhOgHG5Gqb6pc3hC1wpRvoNgh6yegYTAXPaShdjrE5dXqZZxG_xdi0_j3mYy9aqF0oiLzAyH1_tUcsBg2V0aMfGhHHGzwGAgmlkgnY0gmlwhKwaEHiJc2VjcDI1NmsxoQJlB1U_j59OzT5P2wfFX-9-XV6GYgxO08AmXNUc62C5yoN0Y3CCdmGDdWRwgnZh"
 ```
 
 5. Connect member node
